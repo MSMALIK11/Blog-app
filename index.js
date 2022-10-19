@@ -7,7 +7,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: "./database/.env" });
 
 const app = express();
-let PORT = 8000;
+let PORT = process.env.PORT || 8000;
 
 app.use(
   cors({

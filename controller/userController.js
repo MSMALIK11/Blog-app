@@ -2,6 +2,7 @@ import User from "../Model/userSchema.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
+// signup user
 export const signupUser = async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -70,6 +71,10 @@ export const loginUser = async (req, res) => {
     return res.status(400).json({ error: "password not match" });
   }
 };
+
+// <logout user >
+// painding
+// </logout user>
 
 export const myProfile = (req, res) => {
   console.log("running");
