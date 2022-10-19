@@ -37,7 +37,6 @@ export const signupUser = async (req, res) => {
 // login user
 
 export const loginUser = async (req, res) => {
-  res.send("hii");
   const { email, password } = req.body;
   console.log("login");
 
