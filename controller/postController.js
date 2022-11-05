@@ -25,6 +25,7 @@ export const newPost = async (req, res) => {
     description,
   });
   const save = await post.save();
+
   if (save) {
     return res.status(200).json({
       success: false,

@@ -73,9 +73,24 @@ export const loginUser = async (req, res) => {
 };
 
 // <logout user >
-// painding
+export const userLogout = async (req, res) => {
+  console.log("logout route running...");
+  res.clearCookie("jwt");
+  return res.json({ message: "Logout success" });
+};
 // </logout user>
 
-export const myProfile = (req, res) => {
+export const myProfile = async (req, res) => {
   console.log("running");
+
+  const user = await User.findById(req.user._id);
+  console.log(user);
+  return res.status(200).json({
+    succes: true,
+    user,
+  });
+};
+
+export const test = (req, res) => {
+  return res.json("server running dude ✌️");
 };

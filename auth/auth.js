@@ -2,15 +2,15 @@ import jwt from "jsonwebtoken";
 import User from "../Model/userSchema.js";
 export const authentication = async (req, res, next) => {
   try {
-    let { token } = req?.cookies;
+    // let { token } = req?.cookies;
 
     // local login token
-    // let token = req.headers?.authorization;
-    // token = token?.split(" ").slice(1).join(" ");
+    let token = req.headers?.authorization;
+    token = token?.split(" ").slice(1).join(" ");
 
-    if (!token) {
-      return res.status(401).json({ message: "Login First" });
-    }
+    // if (!token) {
+    //   return res.status(401).json({ message: "Login First" });
+    // }
 
     const decode = await jwt.verify(token, process.env.JWT_SECRET);
 
