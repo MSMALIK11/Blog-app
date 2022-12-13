@@ -15,7 +15,7 @@ export const authentication = async (req, res, next) => {
     const decode = await jwt.verify(token, process.env.JWT_SECRET);
 
     req.user = await User.findById(decode._id);
-    res.status(200).json({ success: true, message: "user verify" });
+    // res.status(200).json({ success: true, message: "user verify" });
     next();
   } catch (error) {
     return res.status(401).json({ succcess: false, message: error.message });

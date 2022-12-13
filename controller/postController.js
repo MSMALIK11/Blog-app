@@ -13,12 +13,12 @@ export const newPost = async (req, res) => {
 
   const isExist = await POST.findOne({ title });
   console.log("exist-status", isExist);
-  if (isExist) {
-    return res.status(4001).json({
-      succes: false,
-      message: "title Already exist",
-    });
-  }
+  // if (isExist) {
+  //   return res.status(4001).json({
+  //     succes: false,
+  //     message: "title Already exist",
+  //   });
+  // }
 
   const post = await POST.create({
     title,
