@@ -10,10 +10,31 @@ const postSchema = mongoose.Schema({
     type: String,
     required: true,
   },
+  likes:[],
 
-  author: {
-    type: String,
-  },
+  postedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+},
+likes: [
+    {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    }
+],
+comments: [
+  {
+      user: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+      },
+      comment: {
+          type: String,
+          required: true,
+          trim: true,
+      }
+  }
+],
   image: {
     url: {
       type: String,
@@ -22,9 +43,11 @@ const postSchema = mongoose.Schema({
       type: String,
     },
   },
-  total_post: {
-    type: String,
-  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+},
+
 });
 
 const POST = mongoose.model("post", postSchema);

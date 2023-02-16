@@ -1,6 +1,7 @@
 import express from "express";
 import Router from "./routes/router.js";
 import cors from "cors";
+import expressFileupload from "express-fileupload";
 import cookieParser from "cookie-parser";
 import { connection } from "./database/db.js";
 import dotenv from "dotenv";
@@ -16,13 +17,14 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(expressFileupload({ useTempFiles: true }));
 app.use(express.urlencoded({ extends: true }));
 app.use(cookieParser());
 
 app.use("/", Router);
 
 app.listen(PORT, () => {
-  console.log(`server is running at  port no ${PORT}`);
+  console.log(`server is running at port no. ${PORT}`);
 });
 
 connection();

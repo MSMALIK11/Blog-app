@@ -1,37 +1,39 @@
 import POST from "../Model/postSchema.js";
+import cloudinary from "../database/config.js";
+import User from "../Model/userSchema.js";
+
 export const newPost = async (req, res) => {
-  console.log("rinning ....");
   const { title, description } = req.body;
-
-  if (title == "" && description == "") {
-    return res.status(401).json({
-      success: false,
-      message: "All filds are required",
+  const file = req.files.image.tempFilePath;
+  try {
+    const result = await cloudinary.v2.uploader.upload(file, {
+      folder: "posts",
     });
-  }
-  //   check post alredy exist or not
 
-  const isExist = await POST.findOne({ title });
-  console.log("exist-status", isExist);
-  // if (isExist) {
-  //   return res.status(4001).json({
-  //     succes: false,
-  //     message: "title Already exist",
-  //   });
-  // }
-
-  const post = await POST.create({
-    title,
-    description,
-  });
-  const save = await post.save();
-
-  if (save) {
-    return res.status(200).json({
-      success: false,
-      message: "New post save successfully in  darabase",
+    const post = await POST.create({
+      title,
+      description,
+      postedBy: req.user._id,
+      image: { url: result.secure_url, public_id: result.public_id },
     });
+
+  const user = await User.findById(req.user._id);
+  user.posts.push(post._id);
+  await user.save();
+    const save = await post.save();
+
+    if (save) {
+      return res.status(200).json({
+        success: false,
+        message: "New post save successfully in  darabase",
+
+      });
+    }
+
+  } catch (error) {
+
   }
+
 };
 
 // get all post
@@ -67,12 +69,97 @@ export const getSinglePost = async (req, res) => {
   });
 };
 
-// delet post from database by id
-export const deletePost = async () => {
-  const { id } = res.params;
+// Delete Post
+export const deletePost = async (req, res, next) => {
 
-  const isExist = await POST.findById({ id });
+  const post = await POST.findById(req.params.id);
 
-  if (exist) {
+  if (!post) {
+      return res.status(401).json({
+        success:false,
+        message:'Post not found'
+      })
   }
+
+  if (post.postedBy.toString() !== req.user._id.toString()) {
+      return res.status(401).json({
+        success:false,
+        message:"Unauthorized"
+      });
+  }
+
+  const user = await User.findById(req.user._id);
+
+  const index = user.posts.indexOf(req.params.id);
+  user.posts.splice(index, 1);
+  await user.save();
+
+  res.status(200).json({
+      success: true,
+      message: "Post Deleted"
+  });
+};
+
+
+export const myProfile=async()=>{
+
+}
+
+// Like or Unlike Post
+export const likeUnlikePost =async (req, res, next) => {
+console.log('like process...')
+  const post = await POST.findById(req.params.id);
+
+  if (!post) {
+      return res.status(400).json({
+        success:false,
+        message:'Post not found'
+      })
+  }
+
+  if (post.likes.includes(req.user._id)) {
+      const index = post.likes.indexOf(req.user._id);
+
+      post.likes.splice(index, 1);
+      await post.save();
+
+      return res.status(200).json({
+          success: true,
+          message: "Post Unliked"
+      });
+  } else {
+      post.likes.push(req.user._id)
+
+      await post.save();
+
+      return res.status(200).json({
+          success: true,
+          message: "Post Liked"
+      });
+  }
+};
+// Add Comment
+export const newComment = async (req, res, next) => {
+
+  const post = await POST.findById(req.params.id);
+
+  // if (!post) {
+  //     // return next(new ErrorHandler("Post Not Found", 404));
+  // }
+
+  // if (post.comments.includes(req.user._id)) {
+  //     // return next(new ErrorHandler("Already Commented", 500));
+  // }
+
+  post.comments.push({
+      user: req.user._id,
+      comment: req.body.comment
+  });
+
+  await post.save();
+
+  return res.status(200).json({
+      success: true,
+      message: "Comment Added"
+  });
 };
